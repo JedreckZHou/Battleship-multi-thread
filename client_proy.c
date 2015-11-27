@@ -1,22 +1,35 @@
-#include<stdio.h> 
+/****************************
+* Author: Cristian Gustavo Castro
+*  Univeristy of the Valley of Guatemala
+*  Operating systems
+*
+*  Purpose: Main file from the client side.
+*
+*
+*
+***************************/
+
+
+#include<stdio.h>
 #include<fcntl.h>
 #include<stdlib.h>
 #include<string.h>
 #include <errno.h>
 
+// define paquete genérico
 struct package
 {
     char *id;
     char *type;
 	char *size;
 	char *payload;
-    char *checksum;    
+    char *checksum;
 };
 
 typedef enum {PLAYER1, PLAYER2} players;
 players play = PLAYER1;
 
-
+// Abre canal de comunicación entre servidor y cliente
 int open_wendy(int fifo_server){
 
 	fifo_server=open("/tmp/wendy",O_RDWR);
@@ -28,21 +41,21 @@ int open_wendy(int fifo_server){
 	return fifo_server;
 
 }
-
+// Crear pipe específico de comunicación
 void create_input_pipe(char direccion[]){
-		
-		int unique_file = mkfifo(direccion,0666); 
+
+		int unique_file = mkfifo(direccion,0666);
 		if(unique_file<0) {
-			 // If the file already exists, delete it    		
+			 // If the file already exists, delete it
 	 		printf("Unable to create a fifo \n");
 	 		exit(-1);
 	 	}
 
 }
-
+ // Abrir pipe específico de comunicación
 int open_input_pipe(char direccion[], int fifo_client){
-	
-		fifo_client=open(direccion,O_RDONLY );	 
+
+		fifo_client=open(direccion,O_RDONLY );
 
 		if(fifo_client < 0) {
 	  		printf("Error in opening input pipe file");
@@ -52,18 +65,17 @@ int open_input_pipe(char direccion[], int fifo_client){
 	 	return fifo_client;
 }
 
-int read_response(char *buf, int fifo_client){
-	  	
-	 	buf=malloc(30*sizeof(char));
-	 
+// lee respuesta por parte del servidor
 
-	// 	int flags = fcntl(fifo_client, F_GETFL, 0);
-	//	fcntl(fifo_client, F_SETFL, flags | O_NONBLOCK);
+int read_response(char *buf, int fifo_client){
+
+	 	buf=malloc(30*sizeof(char));
+
 
 	 	int r = read (fifo_client,buf,30*sizeof(char));
 
 	 	if(r<0){
-	 		perror(NULL);	 		
+	 		perror(NULL);
 	 	}
 	 	else{
 	 		printf("Respuesta del servidor: %s \n", buf);
@@ -75,6 +87,7 @@ int read_response(char *buf, int fifo_client){
 
 }
 
+// Menú de opciones
 void menu_game(){
 
 	printf("\t ********** BIENVENIDO ********** \n");
@@ -87,6 +100,7 @@ void menu_game(){
 }
 
 
+// Función que maneja el juego
 void manage_game(int fifo_output, int choice, int fifo_input){
 
 		char address_output[] = "/tmp/o_";

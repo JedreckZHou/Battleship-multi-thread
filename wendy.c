@@ -1,4 +1,13 @@
-#include<stdio.h> 
+/****************************
+* Author: Cristian Gustavo Castro
+*
+*  Create a file called wendy in the /tmp directory
+*  for estabilishing communication between client and server
+*
+*
+***************************/
+
+#include<stdio.h>
 #include<fcntl.h>
 #include<stdlib.h>
 main()

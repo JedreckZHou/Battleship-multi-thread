@@ -1,4 +1,15 @@
-#include <stdio.h> 
+/****************************
+* Author: Cristian Gustavo Castro
+*  Univeristy of the Valley of Guatemala
+*  Operating systems
+*
+*  Purpose: Main file from the client side (aux)
+*
+*
+*
+***************************/
+
+#include <stdio.h>
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,6 +19,8 @@
 #include "functions.h"
 #include "interfaz.h"
 
+
+// Datos del juego
 typedef struct datagame{
 	int dimension;
 	int t1;
@@ -18,9 +31,11 @@ typedef struct datagame{
 
 DataGame juegoActual;
 
-DataGame crear_juego(){	
-	
-	
+
+// Crea un nuevo juego
+DataGame crear_juego(){
+
+
 	initscr();
   	clear();
     if (has_colors()) start_color();
@@ -35,17 +50,19 @@ DataGame crear_juego(){
 	int tipo1, tipo2, tipo3;
 	DataGame dataGame;
 
+
+   // SOlicita datos de juego al usuario
 	printw("Ingrese los datos del juego: \n");
 	printw("Dimensiones del juego nxn: \n");
 	scanw("%d",&dim);
 	printw("Nombre del juego: \n");
-	scanw("%s",nombre);	
+	scanw("%s",nombre);
 	printw("Cantidad de barcos de tipo 1 (1x1):");
 	scanw("%d",&tipo1);
 	printw("Cantidad de barcos de tipo 1 (2x1):");
 	scanw("%d",&tipo2);
 	printw("Cantidad de barcos de tipo 1 (3x2):");
-	scanw("%d",&tipo3);	
+	scanw("%d",&tipo3);
 
 	dataGame.dimension = dim;
 	dataGame.t1 = tipo1;
@@ -57,11 +74,12 @@ DataGame crear_juego(){
 	return dataGame;
 }
 
+// Operaci髇 de respuesta por parte del cliente
 int operacion(int respuesta, package pack, int id, int fifo_output, int fifo_input){
 
 	char tmp_id[25];
 	sprintf(tmp_id, "%d", id);
-	
+
 	if(respuesta == 1){ // Decide crear un juego
 		DataGame dg = crear_juego();
 		juegoActual = dg;
@@ -69,12 +87,12 @@ int operacion(int respuesta, package pack, int id, int fifo_output, int fifo_inp
 		sprintf(dataToSend,"%d,%s,%d,%d,%d",dg.dimension, dg.nombre, dg.t1, dg.t2, dg.t3);
 		pack = build_package(pack, tmp_id , "FA", "10", dataToSend);
 		send_package(pack, fifo_output);
-		
+
 		return 1;
 	}
 
 	else if(respuesta == 2){ // Decide ver la lista de juegos
-		
+
 		initscr();
   		clear();
     	if (has_colors()) start_color();
@@ -83,20 +101,20 @@ int operacion(int respuesta, package pack, int id, int fifo_output, int fifo_inp
     	echo();
     	keypad(stdscr, TRUE);
 
-			
+
 
 		int id_juegos[50];
 		char *token, *token_id, *tokenizer;
 		char resp_salida[8];
 		pack = build_package(pack, tmp_id , "F6", "0", "-");
 		send_package(pack, fifo_output);
-		
+
 		printw("Lista de juegos \n");
-		
+
 		pack =  read_package(pack, fifo_input); // Lee lista de juegos
-		
+
 		int cnt_toks = 0;
- 		token = strtok(pack.payload , "\n"); 
+ 		token = strtok(pack.payload , "\n");
         while (token != NULL){
         	cnt_toks++;
         	if(cnt_toks == 1)
@@ -112,19 +130,19 @@ int operacion(int respuesta, package pack, int id, int fifo_output, int fifo_inp
 	        if(strcmp(resp_salida,"s") == 0){ // El usuario decide unirse a un juego
 	        	int numJuego;
 	        	printw("Ingrese id de juego del listado: ");
-	        	scanw("%d",&numJuego);        	
+	        	scanw("%d",&numJuego);
 	        	char tmpID_game[32];
 	        	sprintf(tmpID_game, "%d", numJuego);
 				pack = build_package(pack, tmp_id, "F8", "10", tmpID_game);
 				send_package(pack, fifo_output);
 				endwin();
 				return 1;
-	        }	
+	        }
 	        else{ // El usuario decide volver al men煤 principal
 	        	endwin();
 	        	return 2;
-	        }	
-        } 
+	        }
+        }
         else{ // No hay juegos para ver
         	printw ("No hay juegos disponibles \n");
         	endwin();
@@ -133,26 +151,30 @@ int operacion(int respuesta, package pack, int id, int fifo_output, int fifo_inp
 	}
 
 }
+
+// Establece datos de juego
 void establecer_datos_juego(char cadena[255]){
 	char *token;
-	token = strtok(cadena , ","); 
+	token = strtok(cadena , ",");
 	int counter_tokens = 0;
     while (token != NULL){
         counter_tokens++;
 		if(counter_tokens == 1)
 			strcpy(juegoActual.nombre, token);
         else if(counter_tokens == 2)
-			juegoActual.dimension = atoi(token);		
+			juegoActual.dimension = atoi(token);
 		else if(counter_tokens == 3)
-			juegoActual.t1 = atoi(token);					
+			juegoActual.t1 = atoi(token);
 		else if(counter_tokens == 4)
 			juegoActual.t2 = atoi(token);
 		else if(counter_tokens == 5)
 			juegoActual.t3 = atoi(token);
-    
+
         token = strtok(NULL,",");
     }
 }
+
+// imprime resultados de juego al momento de creqarlo
 void imprime_datos_juego(){
 
 		initscr();
@@ -185,22 +207,22 @@ void manage_game(int fifo_output, int choice, int fifo_input){
 
 	/** Establecer conexi贸n con el ouput pipe **/
 
-	
+
 	sprintf(st_out, "%d", choice);
-	strcat(address_output,st_out);	
+	strcat(address_output,st_out);
   	int tmp_fifo = -1;
   	while(tmp_fifo < 0){
-		fifo_output = open(address_output,O_WRONLY);		
+		fifo_output = open(address_output,O_WRONLY);
 		tmp_fifo = fifo_output;
 	}
-	
-	/* Ingreso al menu de opciones 
+
+	/* Ingreso al menu de opciones
 		1: Crear juego
 		2: Ver listado de juegos (Opci贸n de unirse a un juego)
 	*/
-	int salida = 0;	
+	int salida = 0;
     while(salida != 1){
-	  		
+
 	  	char *buf_resp;
 	  	buf_resp = malloc(30*sizeof(char));
 
@@ -208,15 +230,15 @@ void manage_game(int fifo_output, int choice, int fifo_input){
 		//scanf("%d",&respuesta_menu);
 		//fflush( stdin );
 		respuesta_menu =  menu_principal();
-		
 
-		salida = operacion(respuesta_menu, pack, choice, fifo_output, fifo_input);		
+
+		salida = operacion(respuesta_menu, pack, choice, fifo_output, fifo_input);
 
 		if(salida != 2){
 			pack =  read_package(pack, fifo_input);
-			
+
 			if(strcmp(pack.type, "F9") == 0){ // Confirmaci贸n de asignaci贸n de juego
-				
+
 				establecer_datos_juego(pack.payload);
 				imprime_datos_juego();
 			}
@@ -226,17 +248,17 @@ void manage_game(int fifo_output, int choice, int fifo_input){
 			}
 			else if(strcmp(pack.type, "FB") == 0){ // Confirmaci贸n de creaci贸n de juego
 
-				printf("%s \n", pack.payload);	
+				printf("%s \n", pack.payload);
 				imprime_datos_juego();
 			}
 		}
-	}	
+	}
 
  	printf ("\n Esperando rival... \n");
 
  	pack = read_package(pack, fifo_input); // Mensaje de inicio de juego
  	printf("%s \n", pack.payload);
- 	printf("Prepare sus barcos... \n");	
+ 	printf("Prepare sus barcos... \n");
 
  	// Posicionamiento de barcos
 	int continuar = 0;

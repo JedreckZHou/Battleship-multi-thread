@@ -1,4 +1,15 @@
-#include <stdio.h> 
+/****************************
+* Author: Cristian Gustavo Castro
+*  Univeristy of the Valley of Guatemala
+*  Operating systems
+*
+*  Purpose: Main file from the server side.
+*
+*
+*
+***************************/
+
+#include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
 #include <string.h>
@@ -15,7 +26,7 @@ typedef struct str_thdata
     char message[100];
 } thdata;
 
-typedef struct info_thread
+typedef struct info_thread     // información genérica del thread
 {
 	int busy;
 	int live;

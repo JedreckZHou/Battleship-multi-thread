@@ -1,5 +1,16 @@
+/****************************
+* Author: Cristian Gustavo Castro
+*  Univeristy of the Valley of Guatemala
+*  Operating systems
+*
+*  Purpose: contains the GUI of the game in ncurses
+*
+*
+*
+***************************/
+
 #define WIDTH 30
-#define HEIGHT 10 
+#define HEIGHT 10
 
 int startx = 0;
 int starty = 0;
@@ -9,7 +20,7 @@ typedef struct position{
   int y;
 }Posicion;
 
-char *choices[] = { 
+char *choices[] = {
       "Crear juego",
       "Ver listado de juegos",
       "Salir",
@@ -24,88 +35,7 @@ void print_matrix_game_playing(WINDOW *menu_win, int highlight_x, int highlight_
 
 
 Posicion matrix_game_playing(int n, Posicion posiciones[], Posicion ataque, int limite, char cadena[100])
-{ 
-    WINDOW *menu_win;
-    int highlight_y = 1;
-    int highlight_x = 1;
-    int choice = 0;
-    int c;
-    Posicion pos;
-
-    initscr();
-    if (has_colors()) start_color();
-    init_pair(1, COLOR_BLACK, COLOR_YELLOW);    
-    clear();
-    noecho();
-    cbreak(); 
-    startx = position_x;
-    starty = position_y;
-    curs_set(0);
-    menu_win = newwin(15, 72, 1, 3);
-    keypad(menu_win, TRUE);
-    wattron(menu_win, COLOR_PAIR(1)); 
-    mvprintw(23, 2, "%s\n", cadena );
-    wattroff(menu_win, COLOR_PAIR(1)); 
-    //mvprintw(0, 0, "Use arrow keys to go up and down, Press enter to select a choice");
-    refresh();
-    print_matrix_game_playing(menu_win, highlight_x, highlight_y, n, posiciones, limite, 3, 2 );
-    int flag_mat = 0;
-    while(flag_mat != 1)
-    { 
-      c = wgetch(menu_win);
-      switch(c)
-      { 
-        case KEY_UP:
-            if(highlight_y == 1)
-                highlight_y = n ; //_choices;
-            else
-                --highlight_y;
-            break;
-        case KEY_DOWN:
-            if(highlight_y == n)
-                highlight_y = 1;
-            else 
-                ++highlight_y;
-            break;
-        case KEY_LEFT:
-            if(highlight_x == 1)
-                highlight_x = n;
-            else 
-                --highlight_x;
-            break;
-        case KEY_RIGHT:
-            if(highlight_x == n)
-                highlight_x = 1;
-            else 
-                ++highlight_x;
-            break;
-       case 10:
-            pos.x = highlight_x;
-            pos.y = highlight_y;
-            flag_mat = 1;        
-        break;
-      default:       
-        refresh();
-        break;
-    }
-
-    print_matrix_game_playing(menu_win, highlight_x, highlight_y, n, posiciones, limite, 3, 2);
-    if(choice != 0) /* User did a choice come out of the infinite loop */
-        break;
-    } 
-    //(23, 0, "%s\n", cadena);
-    clrtoeol();
-    //getch();
-    refresh();
-    endwin();
-
-
-    return pos;
-}
-
-
-Posicion matrix_game(int n, Posicion posiciones[], int limite, char cadena[100])
-{ 
+{
     WINDOW *menu_win;
     int highlight_y = 1;
     int highlight_x = 1;
@@ -116,28 +46,26 @@ Posicion matrix_game(int n, Posicion posiciones[], int limite, char cadena[100])
     initscr();
     if (has_colors()) start_color();
     init_pair(1, COLOR_BLACK, COLOR_YELLOW);
-    attron(COLOR_PAIR(1));  
-
     clear();
     noecho();
-    cbreak(); 
-    startx = 3;
-    starty = 1;
+    cbreak();
+    startx = position_x;
+    starty = position_y;
     curs_set(0);
-    menu_win = newwin(15, 72, starty, startx);
+    menu_win = newwin(15, 72, 1, 3);
     keypad(menu_win, TRUE);
-    wattron(menu_win, COLOR_PAIR(1)); 
+    wattron(menu_win, COLOR_PAIR(1));
     mvprintw(23, 2, "%s\n", cadena );
-    wattroff(menu_win, COLOR_PAIR(1)); 
+    wattroff(menu_win, COLOR_PAIR(1));
     //mvprintw(0, 0, "Use arrow keys to go up and down, Press enter to select a choice");
     refresh();
-    print_matrix_game(menu_win, highlight_x, highlight_y, n, posiciones, limite , 3 ,2 );
+    print_matrix_game_playing(menu_win, highlight_x, highlight_y, n, posiciones, limite, 3, 2 );
     int flag_mat = 0;
     while(flag_mat != 1)
-    { 
+    {
       c = wgetch(menu_win);
       switch(c)
-      { 
+      {
         case KEY_UP:
             if(highlight_y == 1)
                 highlight_y = n ; //_choices;
@@ -147,35 +75,35 @@ Posicion matrix_game(int n, Posicion posiciones[], int limite, char cadena[100])
         case KEY_DOWN:
             if(highlight_y == n)
                 highlight_y = 1;
-            else 
+            else
                 ++highlight_y;
             break;
         case KEY_LEFT:
             if(highlight_x == 1)
                 highlight_x = n;
-            else 
+            else
                 --highlight_x;
             break;
         case KEY_RIGHT:
             if(highlight_x == n)
                 highlight_x = 1;
-            else 
+            else
                 ++highlight_x;
             break;
        case 10:
             pos.x = highlight_x;
             pos.y = highlight_y;
-            flag_mat = 1;        
+            flag_mat = 1;
         break;
-      default:       
+      default:
         refresh();
         break;
     }
 
-    print_matrix_game(menu_win, highlight_x, highlight_y, n, posiciones, limite, 3, 2);
+    print_matrix_game_playing(menu_win, highlight_x, highlight_y, n, posiciones, limite, 3, 2);
     if(choice != 0) /* User did a choice come out of the infinite loop */
         break;
-    } 
+    }
     //(23, 0, "%s\n", cadena);
     clrtoeol();
     //getch();
@@ -186,8 +114,95 @@ Posicion matrix_game(int n, Posicion posiciones[], int limite, char cadena[100])
     return pos;
 }
 
+
+// Calcula la posición de un barco. La matriz de juego
+
+Posicion matrix_game(int n, Posicion posiciones[], int limite, char cadena[100])
+{
+    WINDOW *menu_win;
+    int highlight_y = 1;
+    int highlight_x = 1;
+    int choice = 0;
+    int c;
+    Posicion pos;
+
+    initscr();
+    if (has_colors()) start_color();
+    init_pair(1, COLOR_BLACK, COLOR_YELLOW);
+    attron(COLOR_PAIR(1));
+
+    clear();
+    noecho();
+    cbreak();
+    startx = 3;
+    starty = 1;
+    curs_set(0);
+    menu_win = newwin(15, 72, starty, startx);
+    keypad(menu_win, TRUE);
+    wattron(menu_win, COLOR_PAIR(1));
+    mvprintw(23, 2, "%s\n", cadena );
+    wattroff(menu_win, COLOR_PAIR(1));
+    refresh();
+    print_matrix_game(menu_win, highlight_x, highlight_y, n, posiciones, limite , 3 ,2 );
+    int flag_mat = 0;
+
+    // Mover con flechas del menú. Hacia arriba y hacia abajo
+    while(flag_mat != 1)
+    {
+      c = wgetch(menu_win);
+      switch(c)
+      {
+        case KEY_UP:
+            if(highlight_y == 1)
+                highlight_y = n ; //_choices;
+            else
+                --highlight_y;
+            break;
+        case KEY_DOWN:
+            if(highlight_y == n)
+                highlight_y = 1;
+            else
+                ++highlight_y;
+            break;
+        case KEY_LEFT:
+            if(highlight_x == 1)
+                highlight_x = n;
+            else
+                --highlight_x;
+            break;
+        case KEY_RIGHT:
+            if(highlight_x == n)
+                highlight_x = 1;
+            else
+                ++highlight_x;
+            break;
+       case 10:
+            pos.x = highlight_x;
+            pos.y = highlight_y;
+            flag_mat = 1;
+        break;
+      default:
+        refresh();
+        break;
+    }
+
+    print_matrix_game(menu_win, highlight_x, highlight_y, n, posiciones, limite, 3, 2);
+    if(choice != 0) /* User did a choice come out of the infinite loop */
+        break;
+    }
+    //(23, 0, "%s\n", cadena);
+    clrtoeol();
+    //getch();
+    refresh();
+    endwin();
+
+
+    return pos;
+}
+
+// Menú principal del juego
 int menu_principal()
-{ 
+{
     WINDOW *menu_win;
     int highlight = 1;
     int choice = 0;
@@ -195,29 +210,32 @@ int menu_principal()
 
     initscr();
    // clear();
-    
+
     if (has_colors()) start_color();
     init_pair(1, COLOR_BLACK, COLOR_BLUE);
-    attron(COLOR_PAIR(1));  
-    
+    attron(COLOR_PAIR(1));
+
     noecho();
-    cbreak(); 
-    
+    cbreak();
+
+    // Posiciona las opciones
     startx = (80 - WIDTH) / 2;
     starty = (24 - HEIGHT) / 2;
     curs_set(0);
     menu_win = newwin(HEIGHT, WIDTH, starty, startx);
-    keypad(menu_win, TRUE);  
+    keypad(menu_win, TRUE);
     attrset(COLOR_PAIR(1));
 
     refresh();
-    
+
+
+    //Espera respuesta del usuario para ingresar a una opción del menú
     print_menu(menu_win, highlight);
     while(1)
-    { 
+    {
       c = wgetch(menu_win);
       switch(c)
-      { 
+      {
         case KEY_UP:
             if(highlight == 1)
               highlight = n_choices;
@@ -251,6 +269,7 @@ int menu_principal()
   return choice;
 }
 
+// Imprime opciones del menú
 void print_menu(WINDOW *menu_win, int highlight)
 {
   int x, y, i;  
@@ -266,6 +285,7 @@ void print_menu(WINDOW *menu_win, int highlight)
   mvwprintw(menu_win, 1, 8, "MENU PRINCIPAL");
   wattroff(menu_win, COLOR_PAIR(2));
 
+  // Alumbra casillas del tablero
 
   for(i = 0; i < n_choices; ++i)
   { 
@@ -300,31 +320,34 @@ void print_matrix_game(WINDOW *menu_win, int highlight_x, int highlight_y, int n
   init_pair(3, COLOR_GREEN, COLOR_GREEN);
   init_pair(4, COLOR_GREEN, COLOR_BLACK);
 
+
+  // Mueve opciones de pantalla .Manejo de teclado
+
   for(i = 0; i < n; i++)
-  { 
+  {
     x = 3;
     for(j = 0; j < n ; j++){
         if((highlight_y == i + 1) && ( highlight_x == j + 1))  /* High light the present choice */
-        { 
-          wattron(menu_win, COLOR_PAIR(2)); 
+        {
+          wattron(menu_win, COLOR_PAIR(2));
           mvwprintw(menu_win, y, x, "[ ]");
           wattroff(menu_win, COLOR_PAIR(2));
         }
         else{
-          wattron(menu_win, COLOR_PAIR(4)); 
+          wattron(menu_win, COLOR_PAIR(4));
           mvwprintw(menu_win, y, x, "[ ]");
-          wattron(menu_win, COLOR_PAIR(4)); 
+          wattron(menu_win, COLOR_PAIR(4));
         }
 
         for(k = 0; k < limite; k++){
           if((posiciones[k].x == j + 1 ) && (posiciones[k].y == i + 1 )){
-              wattron(menu_win, COLOR_PAIR(3)); 
+              wattron(menu_win, COLOR_PAIR(3));
               mvwprintw(menu_win, y, x, "[ ]");
               wattroff(menu_win, COLOR_PAIR(3));
           }
         }
         x +=3;
-     }    
+     }
      y++;
   }
 
@@ -335,19 +358,23 @@ void print_matrix_game(WINDOW *menu_win, int highlight_x, int highlight_y, int n
   position_y = q;
 
   for(i = 0; i < n; i++)
-  { 
+  {
     p = x + 3;
     for(j=0; j < n ; j++){
         wattron(menu_win, COLOR_PAIR(1));
         mvwprintw(menu_win, q, p, "[ ]");
         wattroff(menu_win, COLOR_PAIR(1));
          p +=3;
-     }    
+     }
      q++;
-  }  
-  wrefresh(menu_win); 
+  }
+  wrefresh(menu_win);
+
 
 }
+
+
+// Imprime matriz de juego
 void print_matrix_game_playing(WINDOW *menu_win, int highlight_x, int highlight_y, int n, Posicion posiciones[], int limite, int a, int b){
 
   int x,y,i,j;
@@ -361,23 +388,25 @@ void print_matrix_game_playing(WINDOW *menu_win, int highlight_x, int highlight_
   init_pair(3, COLOR_GREEN, COLOR_GREEN);
   init_pair(3, COLOR_GREEN, COLOR_BLACK);
 
+
+  // Dibuja tablero  1
   for(i = 0; i < n; i++)
-  { 
+  {
     x = 3;
     for(j = 0; j < n ; j++){
-        wattron(menu_win, COLOR_PAIR(4)); 
+        wattron(menu_win, COLOR_PAIR(4));
         mvwprintw(menu_win, y, x, "[ ]");
         wattroff(menu_win, COLOR_PAIR(4));
 
         for(k = 0; k < limite; k++){
           if((posiciones[k].x == j + 1 ) && (posiciones[k].y == i + 1 )){
-              wattron(menu_win, COLOR_PAIR(3)); 
+              wattron(menu_win, COLOR_PAIR(3));
               mvwprintw(menu_win, y, x, "[ ]");
               wattroff(menu_win, COLOR_PAIR(3));
           }
         }
         x +=3;
-     }    
+     }
      y++;
   }
 
@@ -387,26 +416,28 @@ void print_matrix_game_playing(WINDOW *menu_win, int highlight_x, int highlight_
   position_x = p;
   position_y = q;
 
+
+  // Dibuja tablero 2
   for(i = 0; i < n; i++)
-  { 
+  {
     p = x + 3;
     for(j=0; j < n ; j++){
 
         if((highlight_y == i + 1) && ( highlight_x == j + 1))  /* High light the present choice */
-        { 
-          wattron(menu_win, COLOR_PAIR(2)); 
+        {
+          wattron(menu_win, COLOR_PAIR(2));
           mvwprintw(menu_win, q, p, "[ ]");
           wattroff(menu_win, COLOR_PAIR(2));
         }
         else{
-          wattron(menu_win, COLOR_PAIR(1)); 
+          wattron(menu_win, COLOR_PAIR(1));
           mvwprintw(menu_win, q, p, "[ ]");
           wattroff(menu_win, COLOR_PAIR(1));
         }
           p +=3;
-     }    
+     }
      q++;
-  }  
-  wrefresh(menu_win); 
+  }
+  wrefresh(menu_win);
 
 }

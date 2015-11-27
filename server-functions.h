@@ -1,10 +1,22 @@
+/****************************
+* Author: Cristian Gustavo Castro
+*  Univeristy of the Valley of Guatemala
+*  Operating systems
+*
+*  Purpose: Server functions for management the pipeline
+*  and for the responses to the client.
+*
+*
+***************************/
+
+
 /* Mensaje de confirmación al servidor de recepción de mensaje */
 
 void write_response_confirmation(int fifo_input, char *respuesta, int rd){
 	if(rd  >= 0 ){
  		respuesta="Mensaje recibido correctamente ";
 		write(fifo_input,respuesta,30*sizeof(char));
-			
+
 	}
 	else{
 		respuesta="Problemas en la recepcion del mensaje";
@@ -14,22 +26,22 @@ void write_response_confirmation(int fifo_input, char *respuesta, int rd){
 
 /* Crea y abre el ouput_{PID}  */
 int manage_output_pipe(char address[25], int fifo_output){
-	int file = mkfifo(address,0666); 
+	int file = mkfifo(address,0666);
 	if(file<0) {
-		
+
 	 	printf("Error creating output client file \n ");
-	 	
-	}   
+
+	}
 
 	fifo_output = open(address,O_RDONLY);
 	if(fifo_output<1) {
 	 	printf("Error opening output client file \n ");
 
 	}
-	return fifo_output;	
+	return fifo_output;
 }
 
-/* FUNCION PARA ABRIR EL PIPE WENDY */
+/* Funci�n para abrir el pipe Wendy */
 int open_wendy(int fifo_server){
 		fifo_server = open("/tmp/wendy",O_RDWR);
 		if(fifo_server<1){	
